@@ -110,6 +110,21 @@ public:
      */
     uint8_t get_pixel_bits() const;
 
+    /// Size (bytes) of the rig calibration EEPROM region that NativeVb1940Sensor reads
+    /// over I²C at EEPROM_I2C_ADDRESS. Must match hololink's EEPROM_PAGE_SIZE * 4 pages = 256.
+    static constexpr size_t EEPROM_REGION_BYTES = 256;
+
+    /**
+     * @brief Populate the rig calibration EEPROM region served at I²C peripheral 0x51.
+     * @details
+     * The 256-byte region holds 30 big-endian doubles in the layout consumed by
+     * `NativeVb1940Sensor::read_calibration_from_eeprom()`. Without this, the emulator
+     * no-ops EEPROM reads and downstream cuVSLAM rejects with "Focal length must be > 0"
+     * because intrinsics come back zero. Used by Isaac Sim's HSBSender to wire USDA Camera
+     * prim values through to the live receiver via the standard I²C calibration channel.
+     */
+    void set_eeprom_data(const uint8_t* data, size_t size);
+
 private:
     /**
      * @brief Build the internal state machine for the Vb1940Emulator
@@ -155,6 +170,14 @@ private:
      * @brief The memory map of the Vb1940Emulator
      */
     uint8_t memory_[VB1940_MEMORY_SIZE] = { 0 };
+
+    /**
+     * @brief Backing store for the rig calibration EEPROM at I²C peripheral 0x51.
+     * @details Zero-initialized so EEPROM reads return all-zero until `set_eeprom_data()`
+     *          is called. Real hardware ships with calibration burned in; in sim
+     *          HSBSender populates this from the USDA Camera prim.
+     */
+    uint8_t eeprom_memory_[EEPROM_REGION_BYTES] = { 0 };
 };
 
 } // namespace hololink::emulation::sensors

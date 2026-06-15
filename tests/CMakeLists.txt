@@ -99,3 +99,18 @@ if (HOLOLINK_BUILD_ROCE)
     )
   endif() # HOLOLINK_BUILD_PYTHON
 endif() # HOLOLINK_BUILD_ROCE
+
+# ##################################################################################################
+# * emulator tests ------------------------------------------------------------------------------
+# Unit tests for the emulator components; gated on HOLOLINK_BUILD_EMULATOR so they
+# build even when the ROCE transport layer is disabled (e.g. emulator-only builds
+# consumed by external simulators like Isaac Sim).
+if(HOLOLINK_BUILD_EMULATOR)
+  ConfigureTest(
+      hololink_vb1940_emulator_test
+    SOURCES
+      vb1940_emulator_test.cpp
+    LINK_LIBRARIES
+      hololink::emulation::sensors
+  )
+endif() # HOLOLINK_BUILD_EMULATOR

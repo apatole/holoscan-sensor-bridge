@@ -17,6 +17,7 @@
 
 from ._emulation_sensors import (
     TEST_I2C_ADDRESS,
+    VB1940_EEPROM_REGION_BYTES,
     TestPatternMode,
     TestSensor,
     Vb1940Emulator,
@@ -24,6 +25,7 @@ from ._emulation_sensors import (
 
 __all__ = [
     "TEST_I2C_ADDRESS",
+    "VB1940_EEPROM_REGION_BYTES",
     "TestPatternMode",
     "TestSensor",
     "Vb1940Emulator",

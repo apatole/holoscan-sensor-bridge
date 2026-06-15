@@ -57,7 +57,17 @@ PYBIND11_MODULE(_emulation_sensors, m)
         .def("get_bytes_per_line", &sensors::Vb1940Emulator::get_bytes_per_line, "get the bytes per line")
         .def("get_image_start_byte", &sensors::Vb1940Emulator::get_image_start_byte, "get the image start byte")
         .def("get_pixel_bits", &sensors::Vb1940Emulator::get_pixel_bits, "get the pixel bits")
-        .def("get_csi_length", &sensors::Vb1940Emulator::get_csi_length, "get the CSI length");
+        .def("get_csi_length", &sensors::Vb1940Emulator::get_csi_length, "get the CSI length")
+        .def(
+            "set_eeprom_data",
+            [](sensors::Vb1940Emulator& self, py::buffer data) {
+                const py::buffer_info info = data.request();
+                self.set_eeprom_data(static_cast<const uint8_t*>(info.ptr),
+                    static_cast<size_t>(info.size * info.itemsize));
+            },
+            "populate the rig calibration EEPROM region served at I²C 0x51");
+
+    m.attr("VB1940_EEPROM_REGION_BYTES") = py::int_(sensors::Vb1940Emulator::EEPROM_REGION_BYTES);
 
 } // PYBIND11_MODULE
 
